@@ -1,0 +1,22 @@
+
+workflows:
+  android-debug:
+    name: Android APK Build
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+
+    scripts:
+      - name: Configure Android SDK
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
+
+      - name: Make Gradle executable
+        script: |
+          chmod +x gradlew
+
+      - name: Build APK
+        script: |
+          ./gradlew assembleDebug
+
+    artifacts:
+      - app/build/outputs/apk/debug/*.apk
