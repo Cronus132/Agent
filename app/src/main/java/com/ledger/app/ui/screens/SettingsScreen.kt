@@ -1,3 +1,4 @@
+
 package com.ledger.app.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
@@ -40,7 +41,21 @@ fun SettingsScreen(
     onClearAll: () -> Unit
 ) {
     var showClearConfirm by remember { mutableStateOf(false) }
-    val symbols = listOf("$", "€", "£", "¥", "₹", "₩", "₽", "R$", "A$", "C$")
+
+    // Display label -> Stored currency symbol
+    val currencies = listOf(
+        "$" to "$",
+        "€" to "€",
+        "£" to "£",
+        "¥" to "¥",
+        "₹" to "₹",
+        "₩" to "₩",
+        "₽" to "₽",
+        "R$" to "R$",
+        "A$" to "A$",
+        "C$" to "C$",
+        "PKR (Rs.)" to "Rs."
+    )
 
     Column(
         modifier = Modifier
@@ -50,22 +65,24 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text("Currency", style = MaterialTheme.typography.titleMedium)
+
         Card(Modifier.fillMaxWidth()) {
             FlowRow(
                 modifier = Modifier.padding(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                symbols.forEach { symbol ->
+                currencies.forEach { (label, symbol) ->
                     FilterChip(
                         selected = state.currency == symbol,
                         onClick = { onSetCurrency(symbol) },
-                        label = { Text(symbol) }
+                        label = { Text(label) }
                     )
                 }
             }
         }
 
         Text("Data", style = MaterialTheme.typography.titleMedium)
+
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp)) {
                 Text(
@@ -73,14 +90,20 @@ fun SettingsScreen(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+
                 OutlinedButton(
                     onClick = { showClearConfirm = true },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 12.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = expenseColor())
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = expenseColor()
+                    )
                 ) {
-                    Icon(Icons.Filled.DeleteSweep, contentDescription = null)
+                    Icon(
+                        Icons.Filled.DeleteSweep,
+                        contentDescription = null
+                    )
                     Spacer(Modifier.width(8.dp))
                     Text("Clear all data")
                 }
@@ -98,15 +121,25 @@ fun SettingsScreen(
         AlertDialog(
             onDismissRequest = { showClearConfirm = false },
             title = { Text("Clear all data?") },
-            text = { Text("This permanently deletes every transaction. This cannot be undone.") },
+            text = {
+                Text(
+                    "This permanently deletes every transaction. This cannot be undone."
+                )
+            },
             confirmButton = {
                 TextButton(onClick = {
                     onClearAll()
                     showClearConfirm = false
-                }) { Text("Clear everything") }
+                }) {
+                    Text("Clear everything")
+                }
             },
             dismissButton = {
-                TextButton(onClick = { showClearConfirm = false }) { Text("Cancel") }
+                TextButton(onClick = {
+                    showClearConfirm = false
+                }) {
+                    Text("Cancel")
+                }
             }
         )
     }
