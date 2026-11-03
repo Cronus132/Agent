@@ -31,6 +31,22 @@ fun dayLabel(dayStart: Long): String {
 fun timeLabel(millis: Long): String =
     SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date(millis))
 
+/** Midnight (local time) on the first day of the month containing [millis]. */
+fun startOfMonth(millis: Long): Long {
+    val cal = Calendar.getInstance()
+    cal.timeInMillis = millis
+    cal.set(Calendar.DAY_OF_MONTH, 1)
+    cal.set(Calendar.HOUR_OF_DAY, 0)
+    cal.set(Calendar.MINUTE, 0)
+    cal.set(Calendar.SECOND, 0)
+    cal.set(Calendar.MILLISECOND, 0)
+    return cal.timeInMillis
+}
+
+/** "November 2026" for a timestamp. */
+fun monthLabel(millis: Long): String =
+    SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(Date(millis))
+
 /**
  * The Material date picker reports the selected day as UTC midnight. Convert that
  * to local noon on the same calendar day so day-grouping stays correct everywhere.

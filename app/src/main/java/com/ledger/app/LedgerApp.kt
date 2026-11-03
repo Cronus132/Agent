@@ -2,10 +2,12 @@ package com.ledger.app
 
 import android.app.Application
 import com.ledger.app.data.AppDatabase
-import com.ledger.app.data.TransactionRepository
+import com.ledger.app.data.LedgerRepository
 
 /** Holds the single database + repository for the app's lifetime. */
 class LedgerApp : Application() {
     val database by lazy { AppDatabase.getInstance(this) }
-    val repository by lazy { TransactionRepository(database.transactionDao()) }
+    val repository by lazy {
+        LedgerRepository(database.transactionDao(), database.savingsGoalDao())
+    }
 }

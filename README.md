@@ -8,10 +8,13 @@ permissions at all (no `INTERNET`), so no data is ever uploaded or shared.
 
 - **Live balance** — updates instantly as you add income or expenses.
 - **Add entries** — amount, item/description, category, income vs. expense, and date.
-- **Today at a glance** — earned today and spent today on the home screen.
-- **History** — every transaction grouped by day with each day's net total; delete with a tap.
-- **Settings** — pick your currency symbol, or wipe all data.
-- **Pleasant, reactive UI** — Jetpack Compose + Material 3, light/dark mode, and
+- **Today & this month at a glance** — earned/spent today plus month income, spending and net saved on the home screen.
+- **Monthly budget** — set a spending limit and watch how much is left (or how far over) each month.
+- **Reports** — this month's income, expenses, net saved, **savings rate**, and a spending-by-category breakdown.
+- **Savings goals** — set targets, track progress with a bar, and add or withdraw contributions (tracked as separate pots).
+- **History** — grouped by day with each day's net total; **search** by item/category and filter by income/expense; delete with a tap.
+- **Settings** — pick your currency symbol, set a monthly budget, or wipe all data.
+- **Pleasant, reactive UI** — Jetpack Compose + Material 3, compact cards, light/dark mode, and
   wallpaper-based dynamic color on Android 12+.
 
 ## Tech stack
@@ -54,12 +57,12 @@ The APK lands in `app/build/outputs/apk/debug/app-debug.apk`.
 ```
 app/src/main/java/com/ledger/app/
 ├─ LedgerApp.kt            Application: owns the database + repository
-├─ MainActivity.kt         Navigation scaffold (Home / History / Settings + Add)
-├─ data/                   Room entity, DAO, database, repository, currency pref
+├─ MainActivity.kt         Navigation scaffold (Home / History / Reports / Goals, Settings + Add)
+├─ data/                   Room entities (transactions, savings goals), DAOs, database (v2 + migration), repository, prefs
 ├─ ui/
-│  ├─ FinanceViewModel.kt  Reactive state: balance, today totals, day groups
+│  ├─ FinanceViewModel.kt  Reactive state: balance, today/month totals, category spend, goals
 │  ├─ theme/               Material 3 colors & theme
-│  └─ screens/             Dashboard, History, Add, Settings, shared components
+│  └─ screens/             Dashboard, History, Reports, Goals, Add, Settings, shared components
 └─ util/                   Money/date formatting, categories
 ```
 

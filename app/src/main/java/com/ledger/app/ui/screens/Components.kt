@@ -19,12 +19,14 @@ import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -40,29 +42,31 @@ import com.ledger.app.util.timeLabel
 @Composable
 fun BalanceCard(state: FinanceUiState) {
     Card(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(20.dp)) {
-            Text("Current balance", style = MaterialTheme.typography.labelLarge)
-            Spacer(Modifier.height(4.dp))
+        Column(Modifier.padding(16.dp)) {
+            Text("Current balance", style = MaterialTheme.typography.labelMedium)
+            Spacer(Modifier.height(2.dp))
             Text(
                 text = formatCents(state.balanceCents, state.currency),
-                style = MaterialTheme.typography.displaySmall,
+                style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 color = if (state.balanceCents < 0) expenseColor() else MaterialTheme.colorScheme.onSurface
             )
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(12.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Column {
-                    Text("Total earned", style = MaterialTheme.typography.labelMedium)
+                    Text("Total earned", style = MaterialTheme.typography.labelSmall)
                     Text(
                         formatCents(state.totalIncomeCents, state.currency),
+                        style = MaterialTheme.typography.bodyMedium,
                         color = incomeColor(),
                         fontWeight = FontWeight.SemiBold
                     )
                 }
                 Column(horizontalAlignment = Alignment.End) {
-                    Text("Total spent", style = MaterialTheme.typography.labelMedium)
+                    Text("Total spent", style = MaterialTheme.typography.labelSmall)
                     Text(
                         formatCents(state.totalExpenseCents, state.currency),
+                        style = MaterialTheme.typography.bodyMedium,
                         color = expenseColor(),
                         fontWeight = FontWeight.SemiBold
                     )
@@ -76,17 +80,17 @@ fun BalanceCard(state: FinanceUiState) {
 fun SummaryTile(
     label: String,
     cents: Long,
-    accent: androidx.compose.ui.graphics.Color,
+    accent: Color,
     currency: String,
     modifier: Modifier = Modifier
 ) {
     Card(modifier) {
-        Column(Modifier.padding(16.dp)) {
-            Text(label, style = MaterialTheme.typography.labelMedium)
-            Spacer(Modifier.height(6.dp))
+        Column(Modifier.padding(12.dp)) {
+            Text(label, style = MaterialTheme.typography.labelSmall)
+            Spacer(Modifier.height(4.dp))
             Text(
                 formatCents(cents, currency),
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium,
                 color = accent,
                 fontWeight = FontWeight.Bold
             )
@@ -107,12 +111,12 @@ fun TransactionRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(32.dp)
                     .clip(CircleShape)
                     .background(accent.copy(alpha = 0.15f)),
                 contentAlignment = Alignment.Center
@@ -120,39 +124,81 @@ fun TransactionRow(
                 Icon(
                     imageVector = if (isIncome) Icons.Filled.ArrowDownward else Icons.Filled.ArrowUpward,
                     contentDescription = null,
-                    tint = accent
+                    tint = accent,
+                    modifier = Modifier.size(18.dp)
                 )
             }
-            Spacer(Modifier.width(12.dp))
+            Spacer(Modifier.width(10.dp))
             Column(Modifier.weight(1f)) {
                 Text(
                     transaction.title,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     "${transaction.category} · ${timeLabel(transaction.timestamp)}",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Spacer(Modifier.width(8.dp))
             Text(
                 text = (if (isIncome) "+" else "-") + formatCents(transaction.amountCents, currency),
+                style = MaterialTheme.typography.bodyMedium,
                 color = accent,
                 fontWeight = FontWeight.SemiBold
             )
             if (onDelete != null) {
-                IconButton(onClick = onDelete) {
+                IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
                     Icon(
                         Icons.Filled.DeleteOutline,
                         contentDescription = "Delete",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
         }
+    }
+}
+
+/** A labelled horizontal progress bar with a left caption and right value. */
+@Composable
+fun LabeledProgress(
+    leading: String,
+    trailing: String,
+    fraction: Float,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(
+                leading,
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false)
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                trailing,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+        Spacer(Modifier.height(4.dp))
+        LinearProgressIndicator(
+            progress = { fraction.coerceIn(0f, 1f) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(8.dp)
+                .clip(CircleShape),
+            color = color,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant
+        )
     }
 }
 
@@ -161,7 +207,7 @@ fun EmptyHint(text: String) {
     Box(
         Modifier
             .fillMaxWidth()
-            .padding(24.dp),
+            .padding(20.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(

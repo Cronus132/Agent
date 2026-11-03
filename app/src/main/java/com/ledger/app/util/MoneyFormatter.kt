@@ -24,6 +24,14 @@ private fun groupThousands(value: Long): String {
     return sb.reverse().toString()
 }
 
+/** Turns cents into a plain, separator-free editable string (e.g. 123400 -> "1234"). */
+fun centsToInput(cents: Long): String {
+    if (cents <= 0) return ""
+    val whole = cents / 100
+    val frac = (cents % 100).toInt()
+    return if (frac == 0) whole.toString() else "$whole.${frac.toString().padStart(2, '0')}"
+}
+
 /**
  * Parses user input such as "12.5" or "1,200" into cents.
  * Returns null when the text is empty or not a valid non-negative number.
